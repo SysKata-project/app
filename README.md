@@ -1,34 +1,45 @@
-# SysKata web
+# SysKata app
 
-The learner-facing application for SysKata, a daily technical practice platform focused primarily on Red Hat certification paths.
+SysKata is a Flutter application for iOS and Android that turns technical training into a daily practice habit. Learners build practical Linux administration and automation skills through short lessons, guided challenges, immediate feedback, and targeted review, with a primary focus on Red Hat certification paths.
 
-## Intended scope
+Kata, our curious red panda, accompanies learners as they progress from individual commands to realistic administrative tasks.
 
-- Certification path selection and clear lesson progression.
-- Short guided lessons and hands-on challenge instructions.
-- Practice session controls, assessment results, and helpful feedback.
-- Targeted review activities and progress summaries.
-- Daily goals, streaks, and achievement milestones.
-- An approachable, playful experience with accessible interactions.
+## The experience
+
+- A clear path of units, lessons, and practical checkpoints toward a selected certification.
+- Focused daily sessions with a suggested goal of 5, 10, or 15 minutes.
+- Interactive questions, command-building exercises, and remote hands-on labs.
+- Immediate explanations, useful hints, and opportunities to retry.
+- Skill review, visible progress, experience points, streaks, and achievement milestones.
+- Friendly encouragement that welcomes learners back after a break.
+
+## Platforms and technology
+
+One shared Flutter/Dart codebase will target iOS and Android. Phone layouts come first, with adaptive layouts for larger screens. Native platform conventions, accessibility, keyboard behavior, and lifecycle handling are part of the design.
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [Product specification](docs/product.md) | Learning loop, screens, motivation, and MVP scope |
+| [Architecture](docs/architecture.md) | Flutter structure, service boundaries, sessions, and synchronization |
+| [Development and delivery](docs/development.md) | Tooling, platform validation, testing, and release expectations |
+| [Roadmap](docs/roadmap.md) | Milestones and acceptance criteria |
 
 ## Component boundaries
 
-The [API](https://github.com/SysKata-project/api) owns saved learner state and progression rules. The [labs component](https://github.com/SysKata-project/labs) owns practice environments and assessment execution. The [content repository](https://github.com/SysKata-project/content) owns lesson text and exercises. The web app presents these capabilities through agreed service contracts.
+The [API](https://github.com/SysKata-project/api) owns learner progress, sessions, review, and reward rules. [Labs](https://github.com/SysKata-project/labs) provisions remote practice environments and assesses results. [Content](https://github.com/SysKata-project/content) owns original lessons, certification paths, and assessment criteria. Shared decisions belong in [docs](https://github.com/SysKata-project/docs).
 
-## Proposed first milestone
+Meet [Kata and browse the brand assets](https://github.com/SysKata-project/.github/tree/main/assets/branding).
 
-Deliver one complete lesson flow: select a lesson, read its instructions, launch a practice session, submit for assessment, understand feedback, and view saved progress.
+## Project status
 
-## Development and contribution
+This repository currently contains planning documents, not a runnable Flutter application. Flutter and the iOS/Android targets are selected; package choices, minimum OS versions, authentication, and the first certification path remain open. No mobile builds have been produced or tested yet.
 
-No application code or framework has been selected yet, so there are no installation or run commands. Start proposals with the learner journey and acceptance criteria. Coordinate shared contracts in [docs](https://github.com/SysKata-project/docs).
+## Contributing
 
-## Status
-
-Planning scaffold only; listed capabilities are planned.
+Open an issue with the learner problem and expected behavior. Changes affecting application contracts or content formats should be coordinated with their owning repositories. Include accessibility and both mobile platforms in implementation acceptance criteria.
 
 ## License
 
-Copyright 2026 SysKata contributors.
-
-This repository, including its code, documentation, and learning content, is licensed under the [Apache License 2.0](LICENSE).
+Copyright 2026 SysKata contributors. Code, documentation, and learning content in this repository are licensed under the [Apache License 2.0](LICENSE).
