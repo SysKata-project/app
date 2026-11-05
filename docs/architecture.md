@@ -4,7 +4,7 @@ Status: proposed architecture; no application code or service contracts exist ye
 
 ## Confirmed decisions
 
-Use Flutter and Dart for a shared iOS and Android application. The mobile client presents learning content and interacts with SysKata services. Linux administration exercises run in isolated remote labs; the phone does not host the target Linux environment.
+Use Flutter and Dart for a shared iOS and Android application. The mobile client presents learning content and interacts with SysKata services. OpenShift hands-on exercises run in isolated remote labs; the phone does not host the cluster. The initial journey is aligned to DO180 and DO280 public objectives.
 
 ## Suggested organization
 
@@ -50,7 +50,7 @@ The API mediates session authorization. A terminal transport may connect directl
 - Labs: session ID, readiness, expiry, terminal transport, reconnect behavior, reset semantics, assessment request, and structured result.
 - Errors: retryability, expired session/content, unavailable environment, unsupported client, and user-facing recovery.
 
-Endpoint paths, payload schemas, authentication provider, and terminal protocol are still open. Record the agreed contract in the owning service repository rather than inventing client-only behavior.
+Proposed endpoint paths and transaction semantics are recorded in the [API learning engine design](https://github.com/SysKata-project/api/blob/main/docs/learning-engine.md). Formal payload schemas, authentication provider and terminal protocol remain implementation work. Record the agreed contract in the owning service repository rather than inventing client-only behavior.
 
 ## Learning state and synchronization
 
@@ -68,3 +68,13 @@ The MVP requires connectivity for content retrieval and submission. Keep enough 
 - Store session credentials with appropriate platform secure storage and exclude them from logs.
 - Treat reminder permission as optional and keep the learning experience usable when denied.
 - Pin supported OS versions and SDK/toolchain versions during implementation; do not claim device compatibility before verification.
+
+## OpenShift learning integration
+
+The server derives learner identity, eligibility and progression from authenticated saved state. Submit only the issued exercise-instance reference and answer, with a durable idempotency key; never authoritatively submit a level, score or balance. Render choice, ordering, constrained command entry and lab-task payloads through typed adapters. Keep answer keys out of client bundles.
+
+Pin local recovery data to account, session, content version and instance. Preserve pending payload/key through interruption, distinguish pending from confirmed outcomes, and reconcile before advancing. The server returns feedback, documentation links, confirmed progress and next action. Conflicting/expired sessions must offer a clear refresh or restart.
+
+Cache immutable assets by hash and clear/isolate account-specific recovery data on sign-out. MVP supports interruption recovery, not offline completion. Terminal access uses scoped short-lived lab credentials; provisioning, expiry, reconnect and assessment failures have separate UI states.
+
+See the [shared architecture](https://github.com/SysKata-project/docs/blob/main/architecture/learning-platform.md) and [OpenShift MVP plan](https://github.com/SysKata-project/docs/blob/main/plans/openshift-mvp.md).

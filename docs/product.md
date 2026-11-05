@@ -60,9 +60,9 @@ Use original layouts, artwork, and interactions. Keep technical explanations pre
 
 ## MVP and later scope
 
-The MVP includes one curated path, onboarding, a lesson sequence, one real remote lab, saved progress, basic review, daily goals, streaks, and Kata feedback. Authentication and cross-device progress are required before a public pilot.
+The MVP includes the OpenShift journey aligned to DO180 and DO280 public objectives: seven pilot lessons and two real remote lab scenarios, onboarding, saved progress, basic review, daily goals, streaks, and Kata feedback. This is a bounded slice, not complete coverage of either course. Original content and the scope are defined in the [shared MVP plan](https://github.com/SysKata-project/docs/blob/main/plans/openshift-mvp.md). Authentication and cross-device progress are required before a public pilot.
 
-Downloaded lessons, offline attempt synchronization, richer achievements, adaptive placement, multiple paths, and reminders can follow the first reliable learning loop. Social competitions, payments, and additional client platforms are outside the initial scope.
+Downloaded lessons, offline attempt synchronization, richer achievements, adaptive placement, multiple paths, and reminders can follow the first reliable learning loop. Lives and life gifting, social competitions, payments, and additional client platforms are outside the initial scope. Mistakes do not gate MVP learning or review; lab compute quotas are managed separately.
 
 ## Failure and interruption behavior
 

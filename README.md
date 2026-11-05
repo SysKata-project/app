@@ -34,11 +34,15 @@ Meet [Kata and browse the brand assets](https://github.com/SysKata-project/.gith
 
 ## Project status
 
-This repository currently contains planning documents, not a runnable Flutter application. Flutter and the iOS/Android targets are selected; package choices, minimum OS versions, authentication, and the first certification path remain open. No mobile builds have been produced or tested yet.
+This repository currently contains planning documents, not a runnable Flutter application. Flutter and the iOS/Android targets are selected; package choices, minimum OS versions, and authentication remain open. The initial learning path is OpenShift aligned to DO180 and DO280 public objectives. No mobile builds have been produced or tested yet.
 
 ## Contributing
 
 Open an issue with the learner problem and expected behavior. Changes affecting application contracts or content formats should be coordinated with their owning repositories. Include accessibility and both mobile platforms in implementation acceptance criteria.
+
+## MVP implementation tracking
+
+See the [OpenShift MVP tracker](https://github.com/SysKata-project/docs/issues/1) and [cross-repository backlog](https://github.com/SysKata-project/docs/blob/main/plans/mvp-backlog.md).
 
 ## License
 
