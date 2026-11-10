@@ -1,0 +1,5 @@
+{
+  "ENVIRONMENT": "development",
+  "USE_FAKE_SERVICES": true,
+  "API_BASE_URL": "https://api.example.invalid"
+}

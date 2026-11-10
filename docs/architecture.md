@@ -1,6 +1,6 @@
 # Flutter application architecture
 
-Status: proposed architecture; no application code or service contracts exist yet.
+Status: mobile foundation implemented for app #1; full learning/authentication flows remain follow-up work. The [API contract](https://github.com/SysKata-project/api/blob/main/contracts/openapi.yaml) is authoritative.
 
 ## Confirmed decisions
 
@@ -28,7 +28,7 @@ integration_test/
 assets/
 ```
 
-This is a proposed layout, not an existing directory tree. Select state management, routing, networking, local storage, and secure credential storage packages through a recorded decision before scaffolding. Avoid committing to package versions until the Flutter SDK is selected and validated.
+The implementation starts with `app/`, `core/` and `features/destinations.dart`; split destination features as their behavior is implemented. [Accepted decisions](foundation-decisions.md) select Riverpod, go_router, http, sqflite and flutter_secure_storage on pinned Flutter 3.47.9. [Typed adapters](adapters.md) separate real HTTP access from fixture-backed UI development.
 
 ## Ownership and integration
 
@@ -50,7 +50,7 @@ The API mediates session authorization. A terminal transport may connect directl
 - Labs: session ID, readiness, expiry, terminal transport, reconnect behavior, reset semantics, assessment request, and structured result.
 - Errors: retryability, expired session/content, unavailable environment, unsupported client, and user-facing recovery.
 
-Proposed endpoint paths and transaction semantics are recorded in the [API learning engine design](https://github.com/SysKata-project/api/blob/main/docs/learning-engine.md). Formal payload schemas, authentication provider and terminal protocol remain implementation work. Record the agreed contract in the owning service repository rather than inventing client-only behavior.
+Proposed endpoint paths and transaction semantics are recorded in the [API learning engine design](https://github.com/SysKata-project/api/blob/main/docs/learning-engine.md). Formal payload schemas and Keycloak browser-based PKCE authentication are defined in the API contract; the mobile sign-in and terminal integrations remain implementation work. Record the agreed contract in the owning service repository rather than inventing client-only behavior.
 
 ## Learning state and synchronization
 
