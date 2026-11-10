@@ -1,0 +1,23 @@
+{
+  "repository": "https://github.com/SysKata-project/api",
+  "commit": "351d4e96ffe728181c1702eaf2e07a6e0da05dfd",
+  "directory": "contracts/fixtures",
+  "sha256": {
+    "duplicate-submission.json": "88371eb801b3c3d79e6e6e57c89b57f5d785e487c5e6a4e4f12933f3bf226072",
+    "expired-lab.json": "bdaf74ae7f244dbecfae1237b749989504cc0666ae6e4fd6152d53c9daa61ffc",
+    "getAssessment-success.json": "b84677b15ac186528e51f28d6c572e8a90d9075b113a7fbb03b2655ad3f98953",
+    "getJourney-success.json": "ccd217e313cc252287e80dae2564f659576c730ce3fda306eae56e2abb38e9c1",
+    "getLab-success.json": "538543b56f7be0c6c777ff9c6be50b273082ced318953cdb8908d9931a45e8ed",
+    "getProgress-success.json": "0d9e12c22d4518b20763bc6f3696c70d068d4d84758ba8afe3bfd7abb94b42dc",
+    "getSession-success.json": "5980683cacf4f5d9a8fb1e66eb505acf6f40ef4d99e7be20fab5bea59b9c9b1b",
+    "infrastructure-failure.json": "f544d4a0045de1ee80c4db692149dce8449c70fd6e6f86552e4e749602c999b6",
+    "listJourneys-success.json": "aa5bd650f3bbb84edd5eec6c865b36ccf40c9f82f93d7f6ee3ece1ac47a9745b",
+    "mistake.json": "b8ca5f532e994a537ad7c3b2eb08ce859ef45be49b7d63f2f737c3f1a247cb51",
+    "question-command_entry.json": "5c30a10129c531cf5a594006faa8d8be464f8de69f081c18138362fce3e6a295",
+    "question-command_order.json": "0c42d547cd0c01645ecbcf5a26c009fd7253b1e90d80f3be6e39db296e411cfd",
+    "question-lab_task.json": "0e021a88e128d3b40af2109d1b2ade44bc85fba4eca99402a6fd94a6b09c3568",
+    "stale-revision.json": "026dc16a128f28e6145e93fbc131537e67a21710a1a00ce86e88d682ac90e2e6",
+    "startSession-success.json": "c6204a5f4ed9b1cf0eb90137fa8619e19a1983cb8a38cf36c94634aa245b131b",
+    "submitAttempt-success.json": "b03b5d74204ed42ecd9e4a571dbbd573d414f11ce7f6624584e0e617548a31d3"
+  }
+}

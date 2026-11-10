@@ -1,0 +1,5 @@
+{
+  "ENVIRONMENT": "production",
+  "USE_FAKE_SERVICES": false,
+  "API_BASE_URL": "https://api.example.invalid"
+}
