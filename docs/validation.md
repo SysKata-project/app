@@ -12,11 +12,20 @@ Validation date: 2026-11-09 (America/Denver).
   mutation retry, four-tab navigation, 250% text, narrow/landscape/tablet layouts,
   dark theme, labeled tap targets, contrast and redacted failure UI.
 - 16 upstream public fixtures passed byte-for-byte SHA-256 provenance checks.
-- iOS simulator debug build passed with Xcode 27.2 (27B52).
+- iOS simulator debug build and native integration test passed on iPhone 17 Pro,
+  iOS 26.5, with Xcode 27.2 (27B52). Normal app launch and visual layout inspected.
+- Android debug APK build and native integration test passed on a disposable
+  Pixel 7 emulator, Android API 36.1 (arm64). The existing emulator was preserved;
+  its insufficient free space prevented installation, so a separate AVD was used.
+- `sh scripts/verify.sh` passed, including formatting and clean static analysis.
 - Secret history scan passed before publication; staged changes are also scanned
   by the required commit hook.
-- Full quality-command, Android build and both native integration results are
-  pending; this document will be updated before review readiness is claimed.
+- Remote CI evidence is attached to [PR #9](https://github.com/SysKata-project/app/pull/9).
+  Its initial quality run exposed fresh-SDK initialization text before version
+  JSON; verification now initializes the SDK before parsing its exact version.
+- [iOS Today screen](screenshots/ios-today.png) records the inspected preview.
+- GitHub reports `main` has no branch protection (HTTP 404 on the protection
+  endpoint). Required-check enforcement is not configured by this PR.
 
 ## Limits
 
