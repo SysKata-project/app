@@ -34,7 +34,7 @@ Meet [Kata and browse the brand assets](https://github.com/SysKata-project/.gith
 
 ## Project status
 
-This repository currently contains planning documents, not a runnable Flutter application. Flutter and the iOS/Android targets are selected; package choices, minimum OS versions, and authentication remain open. The initial learning path is OpenShift aligned to DO180 and DO280 public objectives. No mobile builds have been produced or tested yet.
+This repository contains the Flutter mobile foundation: Today, Learn, Review and Profile navigation, accessible Kata themes, typed service adapters and a fixture-backed development preview. It targets iOS 17+ and Android 12+ using Flutter 3.47.9. Sign-in, complete lesson flows and live labs remain follow-up implementation work. See [setup and checks](docs/development.md), [accepted decisions](docs/foundation-decisions.md) and [validation evidence](docs/validation.md).
 
 ## Contributing
 
