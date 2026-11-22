@@ -17,6 +17,13 @@ class ScriptedService extends FixtureLearningService {
   String response = 'mistake';
   int sends = 0;
   int starts = 0;
+  int journeyReads = 0;
+  @override
+  Future<JourneyPath> journey(String id) {
+    journeyReads++;
+    return super.journey(id);
+  }
+
   bool timeout = false;
   final keys = <String>[];
   final payloads = <Json>[];
@@ -100,6 +107,10 @@ void main() {
       expect(find.text('Session complete'), findsOneWidget);
       expect(find.text('Confirmed practice: 10 XP'), findsOneWidget);
       expect(service.starts, 2);
+      expect(service.journeyReads, greaterThan(1));
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text('Open lesson'), findsOneWidget);
     },
   );
   test('historical partial progress retains unavailable values', () {

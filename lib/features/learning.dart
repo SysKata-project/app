@@ -107,10 +107,19 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   bool enrolling = false;
   Object? enrollmentError;
   String? enrollmentKey, enrollmentZone;
+  AttemptResult? lastConfirmedResult;
   @override
   void initState() {
     super.initState();
     controller = LearningController(ref.read(learningServiceProvider));
+    controller.addListener(() {
+      final result = controller.result;
+      if (result != null && !identical(lastConfirmedResult, result)) {
+        lastConfirmedResult = result;
+        ref.invalidate(journeyProvider(widget.journeyId));
+        ref.invalidate(progressProvider);
+      }
+    });
   }
 
   @override
