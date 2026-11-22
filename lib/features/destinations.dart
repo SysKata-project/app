@@ -160,13 +160,19 @@ class ProgressCard extends StatelessWidget {
           runSpacing: 16,
           children: [
             Text('${progress.totalXp} XP'),
-            Text('${progress.streak} day streak'),
+            Text(
+              progress.streak == null
+                  ? 'Streak unavailable'
+                  : '${progress.streak} day streak',
+            ),
             Text('${progress.completedLessons.length} lessons completed'),
           ],
         ),
         const SizedBox(height: 12),
         Text(
-          progress.dailyGoalCompleted
+          progress.dailyGoalCompleted == null
+              ? 'Daily goal unavailable'
+              : progress.dailyGoalCompleted!
               ? 'Daily goal complete'
               : 'A fresh opportunity to practice',
         ),
@@ -205,8 +211,10 @@ class LearnScreen extends ConsumerWidget {
                           const SizedBox(height: 12),
                           Text('${journey.unitIds.length} learning units'),
                           const SizedBox(height: 12),
-                          const Text(
-                            'Lesson activities will be available in a later milestone.',
+                          FilledButton(
+                            onPressed: () =>
+                                context.push('/learn/${journey.id}'),
+                            child: const Text('View journey'),
                           ),
                         ],
                       ),

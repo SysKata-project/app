@@ -7,6 +7,20 @@ import 'package:http/http.dart' as http;
 import 'models.dart';
 
 abstract interface class LearningService {
+  Future<void> enroll(String journeyId, String timezone, String key);
+  Future<LearningSession> startSession(
+    String journeyId,
+    String lessonId,
+    String key,
+  );
+  Future<AttemptStarted> startAttempt(LearningSession session, String key);
+  Future<HintResult> hint(
+    String sessionId,
+    String attemptId,
+    int revision,
+    String hintId,
+    String key,
+  );
   Future<Catalog> catalog();
   Future<JourneyPath> journey(String id);
   Future<Progress> progress();
@@ -133,6 +147,55 @@ class HttpLearningService implements LearningService {
   }
 
   @override
+  Future<void> enroll(String journeyId, String timezone, String key) async {
+    await _request(
+      '/v1/me/enrollments',
+      key: key,
+      body: {'journey_id': journeyId, 'timezone': timezone},
+    );
+  }
+
+  @override
+  Future<LearningSession> startSession(
+    String journeyId,
+    String lessonId,
+    String key,
+  ) async => LearningSession.fromJson(
+    await _request(
+      '/v1/learning-sessions',
+      key: key,
+      body: {'journey_id': journeyId, 'mode': 'lesson', 'lesson_id': lessonId},
+    ),
+  );
+  @override
+  Future<AttemptStarted> startAttempt(
+    LearningSession session,
+    String key,
+  ) async => AttemptStarted.fromJson(
+    await _request(
+      '/v1/learning-sessions/${_id(session.id)}/attempts',
+      key: key,
+      body: {
+        'session_revision': session.revision,
+        'exercise_instance_id': session.instanceId,
+      },
+    ),
+  );
+  @override
+  Future<HintResult> hint(
+    String sessionId,
+    String attemptId,
+    int revision,
+    String hintId,
+    String key,
+  ) async => HintResult.fromJson(
+    await _request(
+      '/v1/learning-sessions/${_id(sessionId)}/attempts/${_id(attemptId)}/hints',
+      key: key,
+      body: {'session_revision': revision, 'hint_id': hintId},
+    ),
+  );
+  @override
   Future<Catalog> catalog() async =>
       Catalog.fromJson(await _request('/v1/journeys'));
   @override
@@ -183,6 +246,27 @@ class FixtureLearningService implements LearningService {
     return object(object(envelope['response'])['body']);
   }
 
+  @override
+  Future<void> enroll(String journeyId, String timezone, String key) async {}
+  @override
+  Future<LearningSession> startSession(
+    String journeyId,
+    String lessonId,
+    String key,
+  ) async => LearningSession.fromJson(await fixture('startSession-success'));
+  @override
+  Future<AttemptStarted> startAttempt(
+    LearningSession session,
+    String key,
+  ) async => AttemptStarted.fromJson(await fixture('startAttempt-success'));
+  @override
+  Future<HintResult> hint(
+    String sessionId,
+    String attemptId,
+    int revision,
+    String hintId,
+    String key,
+  ) async => HintResult.fromJson(await fixture('requestHint-success'));
   @override
   Future<Catalog> catalog() async =>
       Catalog.fromJson(await fixture('listJourneys-success'));

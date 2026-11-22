@@ -17,3 +17,13 @@ for name, digest in manifest['sha256'].items():
         question = instance['question']
         assert not {'assessment', 'correct_option_id', 'correct_order', 'accepted_commands', 'hints'} & question.keys(), name
 print(f"Verified {len(actual)} unchanged public API fixtures")
+
+preview = root / 'assets/preview/learner.json'
+provenance = json.loads((root / 'contracts/preview-provenance.json').read_text())
+assert hashlib.sha256(preview.read_bytes()).hexdigest() == provenance['sha256']
+content = json.loads(preview.read_text())
+assert len([e for e in content['entities'] if e['kind'] == 'lesson']) == 7
+for entity in content['entities']:
+    if entity['kind'] == 'exercise':
+        assert not {'assessment', 'correct_option_id', 'correct_order', 'accepted_commands', 'hints'} & entity.keys()
+print('Verified seven-lesson public draft preview; no assessment keys')
