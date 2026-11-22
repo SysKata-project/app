@@ -82,6 +82,34 @@ class RecoveryService extends FixtureLearningService {
   }
 }
 
+class ExistingSessionService extends FixtureLearningService {
+  int attemptCreations = 0;
+  @override
+  Future<LearningSession> startSession(
+    String journeyId,
+    String lessonId,
+    String key,
+  ) => session('existing-session');
+  @override
+  Future<LearningSession> session(String id) async {
+    final data = await fixture('getSession-success');
+    data['session_id'] = 'existing-session';
+    data['current_attempt'] = (await fixture(
+      'startAttempt-success',
+    ))['attempt'];
+    return LearningSession.fromJson(data);
+  }
+
+  @override
+  Future<AttemptStarted> startAttempt(
+    LearningSession session,
+    String key,
+  ) async {
+    attemptCreations++;
+    return super.startAttempt(session, key);
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
@@ -153,6 +181,25 @@ void main() {
     expect(backend.reads, greaterThan(reads));
     expect(controller.hasPending, isFalse);
   });
+  test(
+    'second device starts with no cache and resumes the server active attempt',
+    () async {
+      final service = ExistingSessionService();
+      final controller = LearningController(
+        service,
+        journal: MemoryJournal(),
+        accountId: 'second-device',
+      );
+      await controller.restore();
+      expect(controller.session, isNull);
+      await controller.start('journey.openshift', 'another-lesson');
+      expect(controller.session!.id, 'existing-session');
+      expect(controller.attempt, isNotNull);
+      await controller.submit(const ChoiceAnswer('pods'));
+      expect(service.attemptCreations, 0);
+      expect(controller.result, isNotNull);
+    },
+  );
   test(
     'background resume reads server and account switch rejects late writes',
     () async {

@@ -120,6 +120,22 @@ void main() {
     await auth.signIn();
     expect(cleared, [old]);
   });
+  test('deleted account clears persisted credentials and recovery', () async {
+    final vault = MemoryVault(), identity = FakeIdentity();
+    final cleared = <String>[];
+    final auth = Authentication(vault, identity, (account) async {
+      cleared.add(account);
+    });
+    await auth.configure(
+      Installation('https://api.example', 'https://id.example/realms/syskata'),
+    );
+    await auth.signIn();
+    final account = auth.accountId;
+    await auth.expire(deleted: true);
+    expect(auth.signedIn, isFalse);
+    expect(vault.values['auth'], isNull);
+    expect(cleared, [account]);
+  });
   test(
     'concurrent refresh is single-flight and late response cannot undo logout',
     () async {

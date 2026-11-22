@@ -41,16 +41,16 @@ flutter run -d DEVICE_ID --dart-define-from-file=config/development.json
 
 Development uses the public draft pilot projection and scripted API fixtures, prominently labeled as preview
 mode. It does not grade answers, award progress or connect to a backend. The four
-primary tabs are usable without an account. The [learning loop](learning-loop.md) is available; authentication/durable recovery and live terminals remain
-in their linked implementation issues.
+primary tabs are usable without an account. The [learning loop](learning-loop.md) and [authentication/recovery](authentication-recovery.md)
+are implemented; live terminals remain app #4.
 
 ## Environments and secrets
 
 `config/development.json`, `config/staging.json` and `config/production.json`
 use the same application identity. Installing one replaces the other. Endpoint
-examples deliberately use the reserved `example.invalid` domain. Replace an
-endpoint in a local copy to use a real HTTPS service; `API_BASE_URL` is an origin
-without a path, query or credentials. Staging/production reject fake services.
+examples deliberately use the reserved `example.invalid` domain. Live builds
+collect API and Keycloak addresses at first launch; `API_BASE_URL` remains a
+legacy build configuration field, not a live override of saved installation settings. Staging/production reject fake services.
 Dart defines are compiled into the app: never put tokens or secrets in them.
 
 Live environments open first-install API/Keycloak configuration and native browser sign-in.

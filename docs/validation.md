@@ -72,7 +72,7 @@ do not claim those capabilities or a public pilot release.
 
 Validation date: 2026-11-22 (America/Denver).
 
-- `scripts/verify.sh` passed with 37 unit/widget tests, clean analysis and
+- `scripts/verify.sh` passed with 39 unit/widget tests, clean analysis and
   formatting, coverage output, 20 unchanged public fixtures and preview checks.
 - New checks cover installation configuration/restart, HTTPS URL rejection,
   refresh failure, account switching, concurrent refresh/logout, durable lost
@@ -80,8 +80,12 @@ Validation date: 2026-11-22 (America/Denver).
   writes from a signed-out account generation.
 - iOS simulator debug build passed with AppAuth 13.0.0 and its pinned native
   AppAuth-iOS 3.0.0 dependency, including the backup-excluded directory channel.
-- Native integration adds SQLite close/reopen and exact-key replay. Platform
-  execution results are pending; CI now runs these tests on both platforms.
+- All three native integration tests passed on iPhone 17 Pro / iOS 26.5,
+  including SQLite close/reopen and exact-key replay, account isolation and
+  secure-storage write/read/delete. The simulator was stopped afterward.
+- Android native execution remains pending in CI. CI runs integration tests
+  on both platforms. A later local unit-test rerun hit host disk exhaustion;
+  only generated iOS build output from this task was removed to recover space.
 - Secret history scans passed in app and the API companion repository.
 - API companion realm/HTTPS overlay structure checks passed. Live TLS and native
   browser authentication are not verified: no target hostname/certificate was

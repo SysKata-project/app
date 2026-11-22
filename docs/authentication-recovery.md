@@ -14,7 +14,7 @@ not open authentication or persistent learner storage.
 The owner approved this runtime configuration and the exact native return
 `org.syskata.app:/oauth2redirect` on 2026-11-22. Register it in each environment's
 public `syskata-mobile` Keycloak client. This is an OS handoff, separate from the
-HTTPS identity endpoint. See the [API's reusable Keycloak HTTPS setup](https://github.com/SysKata-project/api/blob/codex/mobile-identity-https/docs/mobile-identity.md).
+HTTPS identity endpoint. See the [API's reusable Keycloak HTTPS setup](https://github.com/SysKata-project/api/blob/162b90f/docs/mobile-identity.md).
 
 ## Authentication
 
