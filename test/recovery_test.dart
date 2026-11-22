@@ -82,6 +82,34 @@ class RecoveryService extends FixtureLearningService {
   }
 }
 
+class DurableStartService extends FixtureLearningService {
+  DurableStartService(this.journal);
+  final MemoryJournal journal;
+  final calls = <String>[];
+  @override
+  Future<void> enroll(String journeyId, String timezone, String key) async {
+    calls.add('enroll');
+    final saved = object((await journal.load('account'))!['operation']);
+    expect(saved['enrollKey'], key);
+    expect(saved['journey'], journeyId);
+    expect(saved['timezone'], timezone);
+  }
+
+  @override
+  Future<LearningSession> startSession(
+    String journeyId,
+    String lessonId,
+    String key,
+  ) async {
+    calls.add('start');
+    final saved = object((await journal.load('account'))!['operation']);
+    expect(saved['key'], key);
+    expect(saved['journey'], journeyId);
+    expect(saved['lesson'], lessonId);
+    return super.startSession(journeyId, lessonId, key);
+  }
+}
+
 class ExistingSessionService extends FixtureLearningService {
   int attemptCreations = 0;
   @override
@@ -123,6 +151,80 @@ class RejectedEnrollmentService extends FixtureLearningService {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  for (final enroll in [false, true]) {
+    test(
+      'foreground persists failed ${enroll ? "enrollment" : "start"} before sending',
+      () async {
+        final journal = MemoryJournal()..fail = true;
+        final service = DurableStartService(journal);
+        final controller = LearningController(
+          service,
+          journal: journal,
+          accountId: 'account',
+        );
+        if (enroll) {
+          await controller.enrollAndStart('journey', 'lesson', 'UTC');
+        } else {
+          await controller.start('journey', 'lesson');
+        }
+        expect(service.calls, isEmpty);
+        await controller.foreground();
+        expect(service.calls, isEmpty);
+        expect(controller.canRetry, isTrue);
+        expect(await journal.load('account'), isNull);
+        journal.fail = false;
+        await controller.foreground();
+        expect(service.calls, enroll ? ['enroll', 'start'] : ['start']);
+        expect(controller.error, isNull);
+        expect(controller.hasPending, isFalse);
+      },
+    );
+  }
+  for (final foreground in [true, false]) {
+    test(
+      '${foreground ? "foreground" : "refresh"} persists an existing-attempt answer before replay',
+      () async {
+        final journal = MemoryJournal();
+        final service = RecoveryService(journal);
+        final controller = LearningController(
+          service,
+          journal: journal,
+          accountId: 'account',
+        );
+        await controller.start('journey', 'lesson');
+        // Resuming an open attempt skips the intermediate attempt-creation write.
+        controller.attempt = (await service.startAttempt(
+          controller.session!,
+          'existing-attempt',
+        )).attempt;
+        journal.fail = true;
+        await controller.submit(const ChoiceAnswer('pods'));
+        expect(service.submissions, 0);
+        Future<void> resume() =>
+            foreground ? controller.foreground() : controller.refresh();
+        await resume();
+        expect(service.submissions, 0);
+        expect(controller.canRetry, isTrue);
+        journal.fail = false;
+        service.loseResponse = true;
+        await resume();
+        expect(service.submissions, 1);
+        expect(controller.hasPending, isTrue);
+        controller.dispose();
+        service.loseResponse = false;
+        final restarted = LearningController(
+          service,
+          journal: journal,
+          accountId: 'account',
+        );
+        await restarted.restore();
+        expect(service.requests, hasLength(2));
+        expect(service.requests[0], service.requests[1]);
+        expect(restarted.error, isNull);
+        expect(restarted.hasPending, isFalse);
+      },
+    );
+  }
   test('definitively rejected enrollment can be corrected without trapping the form', () async {
     final journal = MemoryJournal();
     final controller = LearningController(

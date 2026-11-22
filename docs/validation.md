@@ -101,3 +101,19 @@ Validation date: 2026-11-22 (America/Denver).
 
 This remains incomplete until required native/runtime evidence is recorded.
 No store release, public deployment or end-to-end pilot readiness is claimed.
+
+### PR #11 durability review correction
+
+The review reproduced unsaved network mutations after a failed journal write
+when foreground resume or explicit refresh bypassed the normal retry path.
+Execution now persists intent at its shared entry point before network I/O.
+Four regressions failed before the fix and passed afterward: foreground replay
+of session creation/enrollment and foreground/refresh replay of an existing
+attempt answer. They verify continued storage failure blocks transmission,
+recovery writes before transmission, and lost-response restart preserves the
+answer payload and key.
+
+The pinned Flutter 3.47.9 verification passed with 44 unit/widget tests,
+formatting, analysis, coverage generation, fixture provenance and whitespace
+checks. Full-history secret scanning passed. This correction does not supply
+the outstanding interactive native-browser sign-in evidence described above.

@@ -110,18 +110,12 @@ class LearningController extends ChangeNotifier {
     if (busy || hasPending || _disposed) return;
     // A JSON round trip freezes mutable answer collections before persistence.
     _operation = object(jsonDecode(jsonEncode(operation)));
-    await _run(() async {
-      await _persist();
-      await _execute();
-    });
+    await _run(_execute);
   }
 
   Future<void> retry() async {
     if (hasPending && canRetry) {
-      await _run(() async {
-        await _persist();
-        await _execute();
-      });
+      await _run(_execute);
     }
   }
 
@@ -222,6 +216,9 @@ class LearningController extends ChangeNotifier {
   }
 
   Future<void> _execute() async {
+    // Every entry point, including lifecycle resume, must save before sending.
+    // An earlier storage failure may have left this intent only in memory.
+    await _persist();
     final op = _operation!;
     AttemptResult? confirmedResult;
     if (op['kind'] == 'enroll') {

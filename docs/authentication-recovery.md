@@ -44,7 +44,9 @@ session creation, hint or answer request, it atomically writes the operation,
 exact request keys and payload, session/content snapshot and current instance.
 An answer intent is saved before starting its attempt. The attempt-creation key
 survives a lost response; returned attempt ID and revision are saved before
-submission. No mutation is sent if the initial write fails.
+submission. Every execution path, including foreground resume and explicit
+refresh, saves the current intent before sending. A failed write blocks network mutations until
+storage recovers; retries preserve the original payload and request keys.
 
 On reopen, replay the saved operation with its original keys and payload, then
 read server state before advancing. Background-to-foreground transitions also
