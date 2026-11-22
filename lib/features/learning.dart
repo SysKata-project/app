@@ -8,6 +8,7 @@ import '../app/providers.dart';
 import '../core/models.dart';
 import 'destinations.dart';
 import 'learning_controller.dart';
+import 'installation.dart';
 
 final journeyProvider = FutureProvider.family<JourneyPath, String>(
   (ref, id) => ref.watch(learningServiceProvider).journey(id),
@@ -101,7 +102,8 @@ class LessonScreen extends ConsumerStatefulWidget {
   ConsumerState<LessonScreen> createState() => _LessonScreenState();
 }
 
-class _LessonScreenState extends ConsumerState<LessonScreen> {
+class _LessonScreenState extends ConsumerState<LessonScreen>
+    with WidgetsBindingObserver {
   late final LearningController controller;
   final timezone = TextEditingController();
   bool enrolling = false;
@@ -111,7 +113,13 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   @override
   void initState() {
     super.initState();
-    controller = LearningController(ref.read(learningServiceProvider));
+    WidgetsBinding.instance.addObserver(this);
+    controller = LearningController(
+      ref.read(learningServiceProvider),
+      journal: ref.read(recoveryJournalProvider),
+      accountId: ref.read(authenticationProvider)?.accountId,
+    );
+    controller.restore();
     controller.addListener(() {
       final result = controller.result;
       if (result != null && !identical(lastConfirmedResult, result)) {
@@ -124,37 +132,23 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     controller.dispose();
     timezone.dispose();
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) controller.foreground();
+  }
+
   Future<void> begin() async {
-    if (enrolling) return;
-    setState(() {
-      enrolling = true;
-      enrollmentError = null;
-    });
-    enrollmentKey ??= requestKey();
-    enrollmentZone ??= timezone.text.trim();
-    try {
-      await ref
-          .read(learningServiceProvider)
-          .enroll(widget.journeyId, enrollmentZone!, enrollmentKey!);
-      await controller.start(widget.journeyId, widget.lessonId);
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          enrollmentError = e;
-          if (e is ServiceFailure && !e.retryable) {
-            enrollmentKey = null;
-            enrollmentZone = null;
-          }
-        });
-      }
-    } finally {
-      if (mounted) setState(() => enrolling = false);
-    }
+    await controller.enrollAndStart(
+      widget.journeyId,
+      widget.lessonId,
+      timezone.text.trim(),
+    );
   }
 
   @override
@@ -311,11 +305,20 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 ],
                 if (enrollmentError != null)
                   LearningError(error: enrollmentError!, retry: begin),
+                if (controller.canRestart)
+                  OutlinedButton(
+                    onPressed: controller.restart,
+                    child: const Text('Return to lesson start'),
+                  ),
                 if (controller.error != null)
                   LearningError(
                     error: controller.error!,
                     retry: controller.canRetry ? controller.retry : null,
                     refresh: session != null ? controller.refresh : null,
+                  ),
+                if (controller.hasPending)
+                  const Text(
+                    'Pending confirmation · This request is saved. Progress changes only after server confirmation.',
                   ),
                 if (controller.busy)
                   const LinearProgressIndicator(
@@ -351,7 +354,7 @@ class LearningError extends StatelessWidget {
           children: [
             Text(switch (recovery) {
               'sign_in' =>
-                'Sign-in is required. Account sign-in is not available yet.',
+                'Sign-in is required. Return to sign-in to recover your work.',
               'refresh_state' => 'This session changed on the server. Refresh to see its current state.',
               'correct_request' =>
                 'Check your request or return to the journey to start again.',

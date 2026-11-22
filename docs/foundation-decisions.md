@@ -32,3 +32,29 @@ toolchain pins and [validation](validation.md) for actual check results.
 
 Accepted identifiers do not imply store registration or signing setup.
 Device compatibility claims are limited to the recorded validation evidence.
+
+## Installation configuration — app #3
+
+Accepted by the project owner on 2026-11-22:
+
+- Clusters and their endpoints may change; no stable hosted cluster or public
+  release is assumed. The installed application must offer initial endpoint
+  configuration instead of requiring a rebuild for each cluster.
+- Reuse the existing Keycloak service and `syskata` realm from the API
+  repository (`dev/compose.yaml` and `dev/syskata-realm.json`). Configure an
+  HTTPS identity endpoint for the selected environment.
+
+Implementation must distinguish the configurable Keycloak issuer from the
+mobile callback that returns the browser to the application. The existing
+Keycloak Compose service exposes loopback HTTP for development only; it is
+not evidence of a configured or validated HTTPS endpoint.
+
+Accepted by the project owner on 2026-11-22: use the fixed native callback
+`org.syskata.app:/oauth2redirect`. Keycloak and API traffic remain HTTPS.
+Register this exact callback in each cluster's `syskata-mobile` client, with
+Code/PKCE S256, state and nonce validation. This supersedes the API contract's
+blanket callback TLS requirement for this native app return only.
+
+The owner confirmed **local only** validation on 2026-11-22. Deployment to a
+temporary or stable cluster remains deferred; first-install endpoint settings
+are retained for future environments. This does not waive native/runtime checks.

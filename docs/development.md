@@ -41,29 +41,26 @@ flutter run -d DEVICE_ID --dart-define-from-file=config/development.json
 
 Development uses the public draft pilot projection and scripted API fixtures, prominently labeled as preview
 mode. It does not grade answers, award progress or connect to a backend. The four
-primary tabs are usable without an account. The [learning loop](learning-loop.md) is available; authentication/durable recovery and live terminals remain
-in their linked implementation issues.
+primary tabs are usable without an account. The [learning loop](learning-loop.md) and [authentication/recovery](authentication-recovery.md)
+are implemented; live terminals remain app #4.
 
 ## Environments and secrets
 
 `config/development.json`, `config/staging.json` and `config/production.json`
 use the same application identity. Installing one replaces the other. Endpoint
-examples deliberately use the reserved `example.invalid` domain. Replace an
-endpoint in a local copy to use a real HTTPS service; `API_BASE_URL` is an origin
-without a path, query or credentials. Staging/production reject fake services.
+examples deliberately use the reserved `example.invalid` domain. Live builds
+collect API and Keycloak addresses at first launch; `API_BASE_URL` remains a
+legacy build configuration field, not a live override of saved installation settings. Staging/production reject fake services.
 Dart defines are compiled into the app: never put tokens or secrets in them.
 
-The real HTTP adapter obtains an access token through `CredentialStore` and
-refuses unauthenticated requests. Sign-in/refresh/account switching are app #3,
-so live environments currently show that sign-in is required. Do not inject a
-real token through build flags or source code to bypass that milestone.
+Live environments open first-install API/Keycloak configuration and native browser sign-in.
+The HTTP adapter obtains refreshed credentials from `Authentication`; tokens never
+enter build flags or source code. See [authentication and recovery](authentication-recovery.md).
 
 SQLite stores account/session/version/instance-bound recovery payloads with the
-idempotency key in one transaction. It is an adapter foundation, not a completed
-replay queue. Credentials use platform secure storage separately. Android
-backups are disabled; iOS keychain values are device-bound. Complete recovery,
-logout cleanup, retention and backup exclusion validation in app #3 before
-storing real learner data. No learner data belongs in Git.
+idempotency key in one transaction. The account-bound journal persists and replays requests with their original keys. Credentials use platform secure storage separately. Android
+backups are disabled; iOS keychain values are device-bound. Native recovery and backup exclusion must be validated on devices before
+storing real learner data; see the recorded validation limits. No learner data belongs in Git.
 
 ## Checks
 

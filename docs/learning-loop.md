@@ -35,9 +35,8 @@ Each mutation gets a random UUID idempotency key. The controller disables concur
 submissions and retains the exact request payload, revision and key for an explicit
 retry after a timeout or retryable service failure. It does not count infrastructure
 failures as incorrect answers or add XP locally. Stale-state errors offer a server
-refresh. Hints also retain their exact request on retry. The controller state is
-in-memory only: process-death recovery, account binding, persistent request replay,
-refresh tokens and sign-out cleanup are explicitly app #3, not claimed by this issue.
+refresh. Hints also retain their exact request on retry. App #3 adds account-bound SQLite journaling, process-death recovery, refresh
+tokens and sign-out cleanup; see [authentication and recovery](authentication-recovery.md).
 Live modes still require credentials from the credential store; no build-time token
 or unauthenticated grading fallback is introduced.
 

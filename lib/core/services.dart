@@ -43,6 +43,7 @@ class HttpLearningService implements LearningService {
     required this.origin,
     required this.accessToken,
     this.timeout = const Duration(seconds: 20),
+    this.authenticationFailed,
   }) {
     if (origin.scheme != 'https' ||
         origin.host.isEmpty ||
@@ -57,6 +58,7 @@ class HttpLearningService implements LearningService {
   final Uri origin;
   final Future<String?> Function() accessToken;
   final Duration timeout;
+  final Future<void> Function(bool deleted)? authenticationFailed;
   String _id(String id) {
     if (!RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(id)) {
       throw ArgumentError('Invalid identifier');
@@ -103,6 +105,14 @@ class HttpLearningService implements LearningService {
           recovery: 'contact_support',
         );
       }
+      if (response.statusCode == 401) {
+        await authenticationFailed?.call(false);
+        throw const ServiceFailure(
+          code: 'unauthenticated',
+          retryable: false,
+          recovery: 'sign_in',
+        );
+      }
       final Json data;
       try {
         data = object(jsonDecode(utf8.decode(response.bodyBytes)));
@@ -121,7 +131,14 @@ class HttpLearningService implements LearningService {
       }
       if (response.statusCode < 200 || response.statusCode >= 300) {
         try {
-          throw ServiceFailure.fromJson(object(data['error']));
+          final failure = ServiceFailure.fromJson(object(data['error']));
+          if (response.statusCode == 401 ||
+              failure.code == 'account_disabled') {
+            await authenticationFailed?.call(
+              failure.code == 'account_disabled',
+            );
+          }
+          throw failure;
         } on TypeError {
           throw const ServiceFailure(
             code: 'invalid_response',

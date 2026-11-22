@@ -67,3 +67,53 @@ external-browser opening, VoiceOver/TalkBack user testing and live authenticated
 end-to-end behavior are not verified by the local widget tests. Authentication,
 account-bound durable recovery and live terminals remain app #3/#4; these changes
 do not claim those capabilities or a public pilot release.
+
+## Authentication and recovery — app #3
+
+Validation date: 2026-11-22 (America/Denver).
+
+- `scripts/verify.sh` passed with 40 unit/widget tests, clean analysis and
+  formatting, coverage output, 20 unchanged public fixtures and preview checks.
+- New checks cover installation configuration/restart, HTTPS URL rejection,
+  refresh failure, account switching, concurrent refresh/logout, durable lost
+  response replay, disk-write failure, stale revision reconciliation and blocked
+  writes from a signed-out account generation.
+- iOS simulator debug build passed with AppAuth 13.0.0 and its pinned native
+  AppAuth-iOS 3.0.0 dependency, including the backup-excluded directory channel.
+- All three native integration tests passed on iPhone 17 Pro / iOS 26.5,
+  including SQLite close/reopen and exact-key replay, account isolation and
+  secure-storage write/read/delete. The simulator was stopped afterward.
+- Android debug build passed in CI. Its initial native-test step could not
+  locate `sdkmanager`; the helper now explicitly adds the SDK tools to PATH.
+  Final native CI results are attached to [PR #11](https://github.com/SysKata-project/app/pull/11).
+  CI runs integration tests on both platforms. A later local unit-test rerun hit host disk exhaustion;
+  only generated iOS build output from this task was removed to recover space.
+- Secret history scans passed in app and the API companion repository.
+- API companion realm/HTTPS overlay structure checks passed. The isolated
+  HTTPS identity CI smoke passed against real Keycloak/PostgreSQL: verified TLS,
+  exact callback, Code/PKCE, nonce, userinfo, refresh and revocation.
+  Live native browser interaction is not verified. The owner selected local-only
+  validation and deferred cluster deployment. Starting the existing local Podman
+  VM failed with `No space left on device` inside the VM and its API socket stayed
+  unavailable; the VM was returned to its original stopped state without deleting
+  data. An isolated HTTPS/PKCE identity smoke test is provided in the API companion
+  CI. No cluster was changed.
+
+This remains incomplete until required native/runtime evidence is recorded.
+No store release, public deployment or end-to-end pilot readiness is claimed.
+
+### PR #11 durability review correction
+
+The review reproduced unsaved network mutations after a failed journal write
+when foreground resume or explicit refresh bypassed the normal retry path.
+Execution now persists intent at its shared entry point before network I/O.
+Four regressions failed before the fix and passed afterward: foreground replay
+of session creation/enrollment and foreground/refresh replay of an existing
+attempt answer. They verify continued storage failure blocks transmission,
+recovery writes before transmission, and lost-response restart preserves the
+answer payload and key.
+
+The pinned Flutter 3.47.9 verification passed with 44 unit/widget tests,
+formatting, analysis, coverage generation, fixture provenance and whitespace
+checks. Full-history secret scanning passed. This correction does not supply
+the outstanding interactive native-browser sign-in evidence described above.

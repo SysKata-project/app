@@ -7,6 +7,20 @@ import 'package:syskata/core/storage.dart';
 import 'package:syskata/app/providers.dart';
 import 'package:syskata/core/models.dart';
 import 'package:syskata/core/services.dart';
+import 'package:syskata/features/learning_controller.dart';
+
+Future<void> reveal(WidgetTester tester, String label) async {
+  final scrollable = find.byType(Scrollable).last;
+  final state = tester.state<ScrollableState>(scrollable);
+  state.position.jumpTo(state.position.minScrollExtent);
+  await tester.pumpAndSettle();
+  await tester.scrollUntilVisible(
+    find.text(label),
+    200,
+    scrollable: scrollable,
+    maxScrolls: 40,
+  );
+}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -27,28 +41,62 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Open lesson'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Start or resume lesson'));
+    await reveal(tester, 'Start or resume lesson');
     await tester.tap(find.text('Start or resume lesson'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Routes'));
+    await reveal(tester, 'Routes');
     await tester.tap(find.text('Routes'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Check answer'));
+    await reveal(tester, 'Check answer');
     await tester.tap(find.text('Check answer'));
     await tester.pumpAndSettle();
     expect(find.text('Let’s check what changed'), findsOneWidget);
-    await tester.ensureVisible(find.text('Practice the missed objective'));
+    await reveal(tester, 'Practice the missed objective');
     await tester.tap(find.text('Practice the missed objective'));
     await tester.pumpAndSettle();
     service.response = 'partial-progress';
-    await tester.ensureVisible(find.text('Pods'));
+    await reveal(tester, 'Pods');
     await tester.tap(find.text('Pods'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Check answer'));
+    await reveal(tester, 'Check answer');
     await tester.tap(find.text('Check answer'));
     await tester.pumpAndSettle();
     expect(find.text('Session complete'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('SQLite recovery survives controller and database restart', (
+    tester,
+  ) async {
+    var store = await RecoveryStore.open();
+    await store.clearAccount('native-recovery');
+    final service = InterruptedNativeService();
+    var controller = LearningController(
+      service,
+      journal: store,
+      accountId: 'native-recovery',
+    );
+    await controller.start('journey.openshift', 'lesson');
+    await controller.submit(const ChoiceAnswer('pods'));
+    expect(controller.hasPending, isTrue);
+    expect(controller.result, isNull);
+    controller.dispose();
+    await store.close();
+    store = await RecoveryStore.open();
+    service.interrupted = false;
+    controller = LearningController(
+      service,
+      journal: store,
+      accountId: 'native-recovery',
+    );
+    await controller.restore();
+    expect(service.keys, hasLength(2));
+    expect(service.keys[0], service.keys[1]);
+    expect(controller.hasPending, isFalse);
+    expect(controller.result, isNotNull);
+    expect(await store.load('another-account'), isNull);
+    await store.clearAccount('native-recovery');
+    controller.dispose();
+    await store.close();
   });
   testWidgets('launch, tabs and native recovery persistence', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: SysKataApp()));
@@ -105,4 +153,35 @@ class NativeLessonService extends FixtureLearningService {
     required String idempotencyKey,
     required Answer answer,
   }) async => AttemptResult.fromJson(await fixture(response));
+}
+
+class InterruptedNativeService extends FixtureLearningService {
+  bool interrupted = true;
+  final keys = <String>[];
+  @override
+  Future<AttemptResult> submit({
+    required String sessionId,
+    required String attemptId,
+    required String instanceId,
+    required int revision,
+    required String idempotencyKey,
+    required Answer answer,
+  }) async {
+    keys.add(idempotencyKey);
+    if (interrupted) {
+      throw const ServiceFailure(
+        code: 'timeout',
+        retryable: true,
+        recovery: 'retry_same_request',
+      );
+    }
+    return super.submit(
+      sessionId: sessionId,
+      attemptId: attemptId,
+      instanceId: instanceId,
+      revision: revision,
+      idempotencyKey: idempotencyKey,
+      answer: answer,
+    );
+  }
 }

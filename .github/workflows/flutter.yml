@@ -27,7 +27,7 @@ jobs:
   android:
     name: Android debug build
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -40,10 +40,12 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> "$GITHUB_ENV"
       - run: flutter pub get --enforce-lockfile
       - run: flutter build apk --debug --dart-define-from-file=config/development.json
+      - name: Android native recovery tests
+        run: sh scripts/ci-native-tests.sh
   ios:
     name: iOS simulator build
     runs-on: macos-26
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -56,3 +58,5 @@ jobs:
       - run: flutter pub get --enforce-lockfile
       - run: xcodebuild -version
       - run: flutter build ios --simulator --debug --no-codesign --dart-define-from-file=config/development.json
+      - name: iOS native recovery tests
+        run: sh scripts/ci-native-tests.sh
