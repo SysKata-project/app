@@ -68,3 +68,6 @@ checks cover duplicate prevention and exact retry replay. Adapter tests check th
 session/attempt/hint wire requests. Device integration checks use contract fixtures,
 not real authenticated learner data. Live end-to-end pilot validation remains the
 cross-repository release gate.
+
+App #3 supersedes the original in-memory-only recovery limitation with the
+[account-bound journal and authentication flow](authentication-recovery.md).

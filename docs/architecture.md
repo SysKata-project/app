@@ -1,6 +1,6 @@
 # Flutter application architecture
 
-Status: mobile foundation and the [learning presentation flow](learning-loop.md) are implemented; authentication and durable recovery remain app #3. The [API contract](https://github.com/SysKata-project/api/blob/main/contracts/openapi.yaml) is authoritative.
+Status: mobile foundation and the [learning presentation flow](learning-loop.md) are implemented; [authentication and durable recovery](authentication-recovery.md) implement app #3; see validation evidence for remaining runtime checks. The [API contract](https://github.com/SysKata-project/api/blob/main/contracts/openapi.yaml) is authoritative.
 
 ## Confirmed decisions
 
@@ -50,7 +50,7 @@ The API mediates session authorization. A terminal transport may connect directl
 - Labs: session ID, readiness, expiry, terminal transport, reconnect behavior, reset semantics, assessment request, and structured result.
 - Errors: retryability, expired session/content, unavailable environment, unsupported client, and user-facing recovery.
 
-Proposed endpoint paths and transaction semantics are recorded in the [API learning engine design](https://github.com/SysKata-project/api/blob/main/docs/learning-engine.md). Formal payload schemas and Keycloak browser-based PKCE authentication are defined in the API contract; the mobile sign-in and terminal integrations remain implementation work. Record the agreed contract in the owning service repository rather than inventing client-only behavior.
+Proposed endpoint paths and transaction semantics are recorded in the [API learning engine design](https://github.com/SysKata-project/api/blob/main/docs/learning-engine.md). Formal payload schemas and Keycloak browser-based PKCE authentication are defined in the API contract; mobile sign-in is implemented in app #3; terminal integration remains app #4. Record the agreed contract in the owning service repository rather than inventing client-only behavior.
 
 ## Learning state and synchronization
 

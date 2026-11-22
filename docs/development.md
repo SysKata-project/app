@@ -53,17 +53,14 @@ endpoint in a local copy to use a real HTTPS service; `API_BASE_URL` is an origi
 without a path, query or credentials. Staging/production reject fake services.
 Dart defines are compiled into the app: never put tokens or secrets in them.
 
-The real HTTP adapter obtains an access token through `CredentialStore` and
-refuses unauthenticated requests. Sign-in/refresh/account switching are app #3,
-so live environments currently show that sign-in is required. Do not inject a
-real token through build flags or source code to bypass that milestone.
+Live environments open first-install API/Keycloak configuration and native browser sign-in.
+The HTTP adapter obtains refreshed credentials from `Authentication`; tokens never
+enter build flags or source code. See [authentication and recovery](authentication-recovery.md).
 
 SQLite stores account/session/version/instance-bound recovery payloads with the
-idempotency key in one transaction. It is an adapter foundation, not a completed
-replay queue. Credentials use platform secure storage separately. Android
-backups are disabled; iOS keychain values are device-bound. Complete recovery,
-logout cleanup, retention and backup exclusion validation in app #3 before
-storing real learner data. No learner data belongs in Git.
+idempotency key in one transaction. The account-bound journal persists and replays requests with their original keys. Credentials use platform secure storage separately. Android
+backups are disabled; iOS keychain values are device-bound. Native recovery and backup exclusion must be validated on devices before
+storing real learner data; see the recorded validation limits. No learner data belongs in Git.
 
 ## Checks
 

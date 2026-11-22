@@ -140,7 +140,8 @@ class LabQuestion extends Question {
 
 class LearningSession {
   LearningSession.fromJson(Json json)
-    : id = json['session_id'] as String,
+    : snapshot = json,
+      id = json['session_id'] as String,
       revision = json['revision'] as int,
       status = json['status'] as String,
       lessonId = json['lesson_id'] as String?,
@@ -159,6 +160,7 @@ class LearningSession {
           : Question.fromJson(
               object(object(json['current_instance'])['question']),
             );
+  final Json snapshot;
   final String id, status;
   final String? lessonId;
   final OpenAttempt? attempt;

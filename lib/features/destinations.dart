@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../app/providers.dart';
 import '../app/theme.dart';
 import '../core/models.dart';
+import 'installation.dart';
 
 class PageBody extends StatelessWidget {
   const PageBody({required this.children, super.key});
@@ -70,9 +71,7 @@ class FailureCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            signIn
-                ? 'Account sign-in will be connected in the next authentication milestone.'
-                : 'Your confirmed progress has not changed. Try again when you are connected.',
+            signIn ? 'Sign in again to continue.' : 'Your confirmed progress has not changed. Try again when you are connected.',
           ),
           if (!signIn)
             Padding(
@@ -286,11 +285,26 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
           ),
-      const InfoCard(
-        child: Text(
-          'Account sign-in and settings are coming in the authentication milestone. Theme follows your device settings.',
+      if (ref.watch(authenticationProvider) case final auth?)
+        InfoCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Connected to ${auth.installation!.api.host}'),
+              const Text(
+                'Signing out removes pending work from this device. Confirmed progress stays on your server.',
+              ),
+              FilledButton(
+                onPressed: auth.busy ? null : auth.signOut,
+                child: const Text('Sign out'),
+              ),
+            ],
+          ),
+        )
+      else
+        const InfoCard(
+          child: Text('Preview mode. Theme follows your device settings.'),
         ),
-      ),
       const Text(
         'SysKata is independent and is not affiliated with or endorsed by Red Hat.',
       ),

@@ -67,3 +67,25 @@ external-browser opening, VoiceOver/TalkBack user testing and live authenticated
 end-to-end behavior are not verified by the local widget tests. Authentication,
 account-bound durable recovery and live terminals remain app #3/#4; these changes
 do not claim those capabilities or a public pilot release.
+
+## Authentication and recovery — app #3
+
+Validation date: 2026-11-22 (America/Denver).
+
+- `scripts/verify.sh` passed with 37 unit/widget tests, clean analysis and
+  formatting, coverage output, 20 unchanged public fixtures and preview checks.
+- New checks cover installation configuration/restart, HTTPS URL rejection,
+  refresh failure, account switching, concurrent refresh/logout, durable lost
+  response replay, disk-write failure, stale revision reconciliation and blocked
+  writes from a signed-out account generation.
+- iOS simulator debug build passed with AppAuth 13.0.0 and its pinned native
+  AppAuth-iOS 3.0.0 dependency, including the backup-excluded directory channel.
+- Native integration adds SQLite close/reopen and exact-key replay. Platform
+  execution results are pending; CI now runs these tests on both platforms.
+- Secret history scans passed in app and the API companion repository.
+- API companion realm/HTTPS overlay structure checks passed. Live TLS and native
+  browser authentication are not verified: no target hostname/certificate was
+  supplied and the local Podman VM was stopped. No running cluster was changed.
+
+This remains incomplete until required native/runtime evidence is recorded.
+No store release, public deployment or end-to-end pilot readiness is claimed.
