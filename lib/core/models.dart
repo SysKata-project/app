@@ -41,9 +41,13 @@ class LessonNode {
   LessonNode.fromJson(Json json)
     : id = object(json['lesson'])['id'] as String,
       title = object(json['lesson'])['title'] as String,
+      explanation = object(json['lesson'])['explanation_markdown'] as String,
+      minutes = object(json['lesson'])['estimated_minutes'] as int,
       status = LessonStatus.values.byName(json['status'] as String),
       unmetPrerequisites = strings(json['unmet_prerequisite_ids']);
   final String id, title;
+  final String explanation;
+  final int minutes;
   final LessonStatus status;
   final List<String> unmetPrerequisites;
 }
@@ -52,24 +56,37 @@ class JourneyPath {
   JourneyPath.fromJson(Json json)
     : versions = Versions.fromJson(object(json['versions'])),
       journey = Journey.fromJson(object(json['journey'])),
+      references = objects(json['references'])
+          .map(Documentation.fromJson)
+          .toList(),
       lessons = objects(json['lessons'])
           .map(LessonNode.fromJson)
           .toList(growable: false);
   final Versions versions;
   final Journey journey;
   final List<LessonNode> lessons;
+  final List<Documentation> references;
 }
 
 class Progress {
   Progress.fromJson(Json json)
     : revision = json['revision'] as int,
       totalXp = json['total_xp'] as int,
-      streak = json['current_streak'] as int,
-      dailyGoalCompleted = json['daily_goal_completed'] as bool,
+      partial = json['status'] == 'partial',
+      skills = objects(json['skills']).map(SkillEvidence.fromJson).toList(),
+      completedCheckpoints = strings(json['completed_checkpoint_ids']),
+      timezone = json['timezone'] as String?,
+      streak = json['current_streak'] as int?,
+      dailyGoalCompleted = json['daily_goal_completed'] as bool?,
       confirmedAt = DateTime.parse(json['confirmed_at'] as String),
       completedLessons = strings(json['completed_lesson_ids']);
-  final int revision, totalXp, streak;
-  final bool dailyGoalCompleted;
+  final int revision, totalXp;
+  final int? streak;
+  final bool? dailyGoalCompleted;
+  final bool partial;
+  final String? timezone;
+  final List<SkillEvidence> skills;
+  final List<String> completedCheckpoints;
   final DateTime confirmedAt;
   final List<String> completedLessons;
 }
@@ -84,7 +101,9 @@ class Option {
 sealed class Question {
   Question(Json json)
     : id = json['id'] as String,
+      hintIds = strings(json['hint_ids']),
       prompt = json['prompt'] as String;
+  final List<String> hintIds;
   final String id, prompt;
   factory Question.fromJson(Json json) => switch (json['type']) {
     'single_choice' => ChoiceQuestion(json),
@@ -124,6 +143,13 @@ class LearningSession {
     : id = json['session_id'] as String,
       revision = json['revision'] as int,
       status = json['status'] as String,
+      lessonId = json['lesson_id'] as String?,
+      references = objects(json['references'])
+          .map(Documentation.fromJson)
+          .toList(),
+      attempt = json['current_attempt'] == null
+          ? null
+          : OpenAttempt.fromJson(object(json['current_attempt'])),
       versions = Versions.fromJson(object(json['versions'])),
       instanceId = json['current_instance'] == null
           ? null
@@ -134,6 +160,9 @@ class LearningSession {
               object(object(json['current_instance'])['question']),
             );
   final String id, status;
+  final String? lessonId;
+  final OpenAttempt? attempt;
+  final List<Documentation> references;
   final int revision;
   final Versions versions;
   final String? instanceId;
@@ -179,13 +208,18 @@ class AttemptResult {
   AttemptResult.fromJson(Json json)
     : attemptId = json['attempt_id'] as String,
       outcome = json['outcome'] as String,
+      evidence = json['evidence'] as String,
+      references = objects(json['references'])
+          .map(Documentation.fromJson)
+          .toList(),
       sessionRevision = json['session_revision'] as int,
       progress = Progress.fromJson(object(json['progress'])),
       criteria = objects(json['criteria'])
           .map(CriterionFeedback.fromJson)
           .toList(growable: false),
       nextAction = object(json['next_action'])['type'] as String;
-  final String attemptId, outcome, nextAction;
+  final String attemptId, outcome, nextAction, evidence;
+  final List<Documentation> references;
   final int sessionRevision;
   final Progress progress;
   final List<CriterionFeedback> criteria;
@@ -247,4 +281,49 @@ class Assessment {
   final int generation;
   final AttemptResult? result;
   final ServiceFailure? error;
+}
+
+class Documentation {
+  Documentation.fromJson(Json json)
+    : title = json['title'] as String,
+      uri = Uri.parse(json['url'] as String);
+  final String title;
+  final Uri uri;
+}
+
+class SkillEvidence {
+  SkillEvidence.fromJson(Json json)
+    : id = json['skill_id'] as String,
+      independent = json['independent_successes'] as int,
+      assisted = json['assisted_successes'] as int,
+      mistakes = json['mistakes'] as int;
+  final String id;
+  final int independent, assisted, mistakes;
+}
+
+class OpenAttempt {
+  OpenAttempt.fromJson(Json json)
+    : id = json['attempt_id'] as String,
+      status = json['status'] as String,
+      hintIds = strings(object(json['assistance'])['hint_ids']),
+      revealed = object(json['assistance'])['revealed'] as bool;
+  final String id, status;
+  final List<String> hintIds;
+  final bool revealed;
+}
+
+class AttemptStarted {
+  AttemptStarted.fromJson(Json json)
+    : attempt = OpenAttempt.fromJson(object(json['attempt'])),
+      revision = json['session_revision'] as int;
+  final OpenAttempt attempt;
+  final int revision;
+}
+
+class HintResult {
+  HintResult.fromJson(Json json)
+    : text = json['text_markdown'] as String,
+      revision = json['session_revision'] as int;
+  final String text;
+  final int revision;
 }

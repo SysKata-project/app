@@ -39,9 +39,9 @@ flutter devices
 flutter run -d DEVICE_ID --dart-define-from-file=config/development.json
 ```
 
-Development uses bundled, original API fixtures and prominently labels preview
+Development uses the public draft pilot projection and scripted API fixtures, prominently labeled as preview
 mode. It does not grade answers, award progress or connect to a backend. The four
-primary tabs are usable without an account. UI features beyond the shell remain
+primary tabs are usable without an account. The [learning loop](learning-loop.md) is available; authentication/durable recovery and live terminals remain
 in their linked implementation issues.
 
 ## Environments and secrets

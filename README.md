@@ -34,7 +34,7 @@ Meet [Kata and browse the brand assets](https://github.com/SysKata-project/.gith
 
 ## Project status
 
-This repository contains the Flutter mobile foundation: Today, Learn, Review and Profile navigation, accessible Kata themes, typed service adapters and a fixture-backed development preview. It targets iOS 17+ and Android 12+ using Flutter 3.47.9. Sign-in, complete lesson flows and live labs remain follow-up implementation work. See [setup and checks](docs/development.md), [accepted decisions](docs/foundation-decisions.md) and [validation evidence](docs/validation.md).
+This repository contains the Flutter mobile foundation: Today, Learn, Review and Profile navigation, accessible Kata themes, typed service adapters and a fixture-backed development preview. It targets iOS 17+ and Android 12+ using Flutter 3.47.9. The [learning loop](docs/learning-loop.md) now presents journeys, lessons, exercises, hints and authoritative feedback. Sign-in/durable recovery and live terminals remain follow-up implementation work. See [setup and checks](docs/development.md), [accepted decisions](docs/foundation-decisions.md) and [validation evidence](docs/validation.md).
 
 ## Contributing
 

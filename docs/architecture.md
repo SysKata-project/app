@@ -1,6 +1,6 @@
 # Flutter application architecture
 
-Status: mobile foundation implemented for app #1; full learning/authentication flows remain follow-up work. The [API contract](https://github.com/SysKata-project/api/blob/main/contracts/openapi.yaml) is authoritative.
+Status: mobile foundation and the [learning presentation flow](learning-loop.md) are implemented; authentication and durable recovery remain app #3. The [API contract](https://github.com/SysKata-project/api/blob/main/contracts/openapi.yaml) is authoritative.
 
 ## Confirmed decisions
 

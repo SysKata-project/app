@@ -5,11 +5,19 @@ import 'package:go_router/go_router.dart';
 import 'providers.dart';
 import 'theme.dart';
 import '../features/destinations.dart';
+import '../features/learning.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     initialLocation: '/today',
     routes: [
+      GoRoute(
+        path: '/learn/:journey/lesson/:lesson',
+        builder: (context, state) => LessonScreen(
+          journeyId: state.pathParameters['journey']!,
+          lessonId: state.pathParameters['lesson']!,
+        ),
+      ),
       ShellRoute(
         builder: (context, state, child) =>
             AppShell(path: state.uri.path, child: child),
@@ -21,6 +29,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/learn',
             builder: (context, state) => const LearnScreen(),
+            routes: [
+              GoRoute(
+                path: ':journey',
+                builder: (context, state) =>
+                    JourneyScreen(id: state.pathParameters['journey']!),
+              ),
+            ],
           ),
           GoRoute(
             path: '/review',
@@ -74,7 +89,7 @@ class AppShell extends ConsumerWidget {
   ];
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final index = paths.indexOf(path);
+    final index = paths.indexWhere((p) => path == p || path.startsWith('$p/'));
     final selected = index < 0 ? 0 : index;
     final size = MediaQuery.sizeOf(context);
     final wide = size.width >= 840 && size.height >= 500;

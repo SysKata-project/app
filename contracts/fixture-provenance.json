@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/SysKata-project/api",
-  "commit": "351d4e96ffe728181c1702eaf2e07a6e0da05dfd",
+  "commit": "1a2d2922de4355f6d159586e37af19bbeb81dba7",
   "directory": "contracts/fixtures",
   "sha256": {
     "duplicate-submission.json": "88371eb801b3c3d79e6e6e57c89b57f5d785e487c5e6a4e4f12933f3bf226072",
@@ -18,6 +18,10 @@
     "question-lab_task.json": "0e021a88e128d3b40af2109d1b2ade44bc85fba4eca99402a6fd94a6b09c3568",
     "stale-revision.json": "026dc16a128f28e6145e93fbc131537e67a21710a1a00ce86e88d682ac90e2e6",
     "startSession-success.json": "c6204a5f4ed9b1cf0eb90137fa8619e19a1983cb8a38cf36c94634aa245b131b",
-    "submitAttempt-success.json": "b03b5d74204ed42ecd9e4a571dbbd573d414f11ce7f6624584e0e617548a31d3"
+    "submitAttempt-success.json": "b03b5d74204ed42ecd9e4a571dbbd573d414f11ce7f6624584e0e617548a31d3",
+    "startAttempt-success.json": "b5baa73cc23b8bcbf814dab2e7bfe9d698c2ea3404270db0bc3b1710cc45dd06",
+    "requestHint-success.json": "2e033ae6c255d0b2d57e2401ed293be7e167c179e35581d36bc2ce7359f98e1b",
+    "partial-progress.json": "e3148db9ea63431468472af68b55a974043c082cb3532632d7baf30b7ce9f32a",
+    "resumed-assisted-attempt.json": "fdeb1357fb150017ae59578d872c10fd4d0e424f4cc0925894ee8e2ce2dc8874"
   }
 }

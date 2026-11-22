@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../core/config.dart';
 import '../core/models.dart';
 import '../core/services.dart';
+import '../core/preview_service.dart';
 import '../core/storage.dart';
 
 final configProvider = Provider<AppConfig>(
@@ -14,7 +15,7 @@ final credentialStoreProvider = Provider<CredentialStore>(
 );
 final learningServiceProvider = Provider<LearningService>((ref) {
   final config = ref.watch(configProvider);
-  if (config.useFakeServices) return FixtureLearningService();
+  if (config.useFakeServices) return PilotPreviewService();
   final client = http.Client();
   ref.onDispose(client.close);
   return HttpLearningService(

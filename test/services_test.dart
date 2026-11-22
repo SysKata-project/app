@@ -16,6 +16,59 @@ HttpLearningService service(http.Client client) => HttpLearningService(
   accessToken: () async => 'test-only',
 );
 void main() {
+  test(
+    'HTTP session, attempt and hint mutations match public contract fixtures',
+    () async {
+      final cases = <String, String>{
+        '/v1/me/enrollments': 'enroll-success',
+        '/v1/learning-sessions': 'startSession-success',
+        '/v1/learning-sessions/session-1/attempts': 'startAttempt-success',
+        '/v1/learning-sessions/session-1/attempts/attempt-1/hints':
+            'requestHint-success',
+      };
+      final requests = <Json>[];
+      final api = service(
+        MockClient((request) async {
+          expect(request.method, 'POST');
+          expect(request.headers['Idempotency-Key'], 'request-key');
+          requests.add(object(jsonDecode(request.body)));
+          final name = cases[request.url.path]!;
+          return http.Response(
+            jsonEncode(
+              name == 'enroll-success' ? <String, dynamic>{} : body(name),
+            ),
+            200,
+          );
+        }),
+      );
+      await api.enroll('journey.fixture', 'America/Denver', 'request-key');
+      final session = await api.startSession(
+        'journey.fixture',
+        'lesson.fixture',
+        'request-key',
+      );
+      final started = await api.startAttempt(session, 'request-key');
+      final hint = await api.hint(
+        session.id,
+        started.attempt.id,
+        started.revision,
+        'hint.resource',
+        'request-key',
+      );
+      expect(requests, [
+        {'journey_id': 'journey.fixture', 'timezone': 'America/Denver'},
+        {
+          'journey_id': 'journey.fixture',
+          'mode': 'lesson',
+          'lesson_id': 'lesson.fixture',
+        },
+        {'session_revision': 1, 'exercise_instance_id': 'instance-1'},
+        {'session_revision': 2, 'hint_id': 'hint.resource'},
+      ]);
+      expect(hint.revision, 3);
+    },
+  );
+
   test('typed models decode all selected successful upstream fixtures', () {
     expect(
       Catalog.fromJson(body('listJourneys-success')).journeys.single.id,
