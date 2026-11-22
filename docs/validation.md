@@ -72,7 +72,7 @@ do not claim those capabilities or a public pilot release.
 
 Validation date: 2026-11-22 (America/Denver).
 
-- `scripts/verify.sh` passed with 39 unit/widget tests, clean analysis and
+- `scripts/verify.sh` passed with 40 unit/widget tests, clean analysis and
   formatting, coverage output, 20 unchanged public fixtures and preview checks.
 - New checks cover installation configuration/restart, HTTPS URL rejection,
   refresh failure, account switching, concurrent refresh/logout, durable lost
@@ -85,8 +85,8 @@ Validation date: 2026-11-22 (America/Denver).
   secure-storage write/read/delete. The simulator was stopped afterward.
 - Android debug build passed in CI. Its initial native-test step could not
   locate `sdkmanager`; the helper now explicitly adds the SDK tools to PATH.
-  Android native execution remains pending on the corrected revision. CI runs integration tests
-  on both platforms. A later local unit-test rerun hit host disk exhaustion;
+  Final native CI results are attached to [PR #11](https://github.com/SysKata-project/app/pull/11).
+  CI runs integration tests on both platforms. A later local unit-test rerun hit host disk exhaustion;
   only generated iOS build output from this task was removed to recover space.
 - Secret history scans passed in app and the API companion repository.
 - API companion realm/HTTPS overlay structure checks passed. The isolated

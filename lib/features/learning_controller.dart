@@ -164,14 +164,17 @@ class LearningController extends ChangeNotifier {
     });
   }
 
-  bool get canRestart =>
-      error is ServiceFailure &&
-      !(error! as ServiceFailure).retryable &&
-      [
-        'expired',
-        'unsupported_content',
-        'not_found',
-      ].contains((error! as ServiceFailure).code);
+  bool get canRestart {
+    final failure = error;
+    if (failure is! ServiceFailure || failure.retryable) return false;
+    return [
+          'expired',
+          'unsupported_content',
+          'not_found',
+        ].contains(failure.code) ||
+        (session == null && failure.recovery == 'correct_request');
+  }
+
   Future<void> restart() async {
     if (!canRestart || busy) return;
     await _run(() async {

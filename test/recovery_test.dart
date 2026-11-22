@@ -110,8 +110,33 @@ class ExistingSessionService extends FixtureLearningService {
   }
 }
 
+class RejectedEnrollmentService extends FixtureLearningService {
+  @override
+  Future<void> enroll(String journeyId, String timezone, String key) async {
+    throw const ServiceFailure(
+      code: 'invalid_request',
+      retryable: false,
+      recovery: 'correct_request',
+    );
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('definitively rejected enrollment can be corrected without trapping the form', () async {
+    final journal = MemoryJournal();
+    final controller = LearningController(
+      RejectedEnrollmentService(),
+      journal: journal,
+      accountId: 'account',
+    );
+    await controller.enrollAndStart('journey', 'lesson', 'invalid-zone');
+    expect(controller.hasPending, isTrue);
+    expect(controller.canRestart, isTrue);
+    await controller.restart();
+    expect(controller.hasPending, isFalse);
+    expect((await journal.load('account'))!['operation'], isNull);
+  });
   test(
     'lost response and restart replay exact persisted payload and key',
     () async {
