@@ -9,6 +9,19 @@ import 'package:syskata/core/models.dart';
 import 'package:syskata/core/services.dart';
 import 'package:syskata/features/learning_controller.dart';
 
+Future<void> reveal(WidgetTester tester, String label) async {
+  final scrollable = find.byType(Scrollable).last;
+  final state = tester.state<ScrollableState>(scrollable);
+  state.position.jumpTo(state.position.minScrollExtent);
+  await tester.pumpAndSettle();
+  await tester.scrollUntilVisible(
+    find.text(label),
+    200,
+    scrollable: scrollable,
+    maxScrolls: 40,
+  );
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('native lesson mistake, remediation and completion', (
@@ -28,24 +41,24 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Open lesson'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Start or resume lesson'));
+    await reveal(tester, 'Start or resume lesson');
     await tester.tap(find.text('Start or resume lesson'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Routes'));
+    await reveal(tester, 'Routes');
     await tester.tap(find.text('Routes'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Check answer'));
+    await reveal(tester, 'Check answer');
     await tester.tap(find.text('Check answer'));
     await tester.pumpAndSettle();
     expect(find.text('Let’s check what changed'), findsOneWidget);
-    await tester.ensureVisible(find.text('Practice the missed objective'));
+    await reveal(tester, 'Practice the missed objective');
     await tester.tap(find.text('Practice the missed objective'));
     await tester.pumpAndSettle();
     service.response = 'partial-progress';
-    await tester.ensureVisible(find.text('Pods'));
+    await reveal(tester, 'Pods');
     await tester.tap(find.text('Pods'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Check answer'));
+    await reveal(tester, 'Check answer');
     await tester.tap(find.text('Check answer'));
     await tester.pumpAndSettle();
     expect(find.text('Session complete'), findsOneWidget);
