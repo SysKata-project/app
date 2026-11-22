@@ -14,7 +14,11 @@ case "$(uname -s)" in
     export PATH
     sudo chmod a+rw /dev/kvm
     sdkmanager 'system-images;android-35;google_apis;x86_64' 'emulator'
-    echo no | avdmanager create avd --name syskata-ci --package 'system-images;android-35;google_apis;x86_64'
+    ANDROID_AVD_HOME="$RUNNER_TEMP/syskata-avd"
+    export ANDROID_AVD_HOME
+    mkdir -p "$ANDROID_AVD_HOME"
+    echo no | avdmanager create avd --name syskata-ci --path "$ANDROID_AVD_HOME/syskata-ci.avd" --package 'system-images;android-35;google_apis;x86_64'
+    test -f "$ANDROID_AVD_HOME/syskata-ci.ini"
     "$ANDROID_HOME/emulator/emulator" -avd syskata-ci -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect >/tmp/syskata-emulator.log 2>&1 &
     emulator_pid=$!
     trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
