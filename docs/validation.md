@@ -83,13 +83,21 @@ Validation date: 2026-11-22 (America/Denver).
 - All three native integration tests passed on iPhone 17 Pro / iOS 26.5,
   including SQLite close/reopen and exact-key replay, account isolation and
   secure-storage write/read/delete. The simulator was stopped afterward.
-- Android native execution remains pending in CI. CI runs integration tests
+- Android debug build passed in CI. Its initial native-test step could not
+  locate `sdkmanager`; the helper now explicitly adds the SDK tools to PATH.
+  Android native execution remains pending on the corrected revision. CI runs integration tests
   on both platforms. A later local unit-test rerun hit host disk exhaustion;
   only generated iOS build output from this task was removed to recover space.
 - Secret history scans passed in app and the API companion repository.
-- API companion realm/HTTPS overlay structure checks passed. Live TLS and native
-  browser authentication are not verified: no target hostname/certificate was
-  supplied and the local Podman VM was stopped. No running cluster was changed.
+- API companion realm/HTTPS overlay structure checks passed. The isolated
+  HTTPS identity CI smoke passed against real Keycloak/PostgreSQL: verified TLS,
+  exact callback, Code/PKCE, nonce, userinfo, refresh and revocation.
+  Live native browser interaction is not verified. The owner selected local-only
+  validation and deferred cluster deployment. Starting the existing local Podman
+  VM failed with `No space left on device` inside the VM and its API socket stayed
+  unavailable; the VM was returned to its original stopped state without deleting
+  data. An isolated HTTPS/PKCE identity smoke test is provided in the API companion
+  CI. No cluster was changed.
 
 This remains incomplete until required native/runtime evidence is recorded.
 No store release, public deployment or end-to-end pilot readiness is claimed.

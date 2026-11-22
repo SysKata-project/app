@@ -54,3 +54,7 @@ Accepted by the project owner on 2026-11-22: use the fixed native callback
 Register this exact callback in each cluster's `syskata-mobile` client, with
 Code/PKCE S256, state and nonce validation. This supersedes the API contract's
 blanket callback TLS requirement for this native app return only.
+
+The owner confirmed **local only** validation on 2026-11-22. Deployment to a
+temporary or stable cluster remains deferred; first-install endpoint settings
+are retained for future environments. This does not waive native/runtime checks.

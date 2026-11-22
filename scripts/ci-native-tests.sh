@@ -10,6 +10,8 @@ case "$(uname -s)" in
     flutter test integration_test/app_test.dart -d "$device_id" --dart-define-from-file=config/development.json
     ;;
   Linux)
+    PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+    export PATH
     sudo chmod a+rw /dev/kvm
     sdkmanager 'system-images;android-35;google_apis;x86_64' 'emulator'
     echo no | avdmanager create avd --name syskata-ci --package 'system-images;android-35;google_apis;x86_64'
