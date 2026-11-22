@@ -18,11 +18,15 @@ case "$(uname -s)" in
     "$ANDROID_HOME/emulator/emulator" -avd syskata-ci -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect >/tmp/syskata-emulator.log 2>&1 &
     emulator_pid=$!
     trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
-    adb wait-for-device
+    if ! timeout 180 adb wait-for-device; then
+      echo 'Emulator did not connect within 180 seconds'
+      cat /tmp/syskata-emulator.log
+      exit 1
+    fi
     count=0
     until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; do
       count=$((count + 1))
-      [ "$count" -lt 90 ] || { echo 'Emulator boot timed out'; exit 1; }
+      [ "$count" -lt 90 ] || { echo 'Emulator boot timed out'; cat /tmp/syskata-emulator.log; exit 1; }
       sleep 2
     done
     adb shell input keyevent 82
